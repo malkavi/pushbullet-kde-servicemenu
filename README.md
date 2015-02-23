@@ -7,11 +7,10 @@ Installation
 ------------
 
 - Copy pushbullet-kde to a bin directory (~/bin or /usr/local/bin) and make it executable (chmod +x pushbullet-kde)
-- Copy pushbullet.png to ~/.kde/share/icon/
-- Copy pushbullet.desktop to ~/.kde/share/kde4/services/ServiceMenus/
+- Copy pushbullet to a bin directory (~/bin or /usr/local/bin) and make it executable (chmod +x pushbullet)
+- Copy JSON.sh to a bin directory (~/bin or /usr/local/bin) and make it executable (chmod +x JSON.sh)
+- Copy pushbullet.png to ~/.kde/share/icon/ (or ~/.kde4/share/icons/hicolor/48x48/apps/)
+- Copy pushbullet.desktop to ~/.kde/share/kde4/services/ServiceMenus/ (or ~/.kde4/share/kde4/services/)
 
-
-Todo (in a far away future...)
-------------------------------
-- integration with KdeWallet to store API key
-- allow to send text files as a note and not as a file.
+Thanks to:
+https://github.com/Red5d/pushbullet-bash
