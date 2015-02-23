@@ -1,7 +1,7 @@
  #!/bin/bash
 
 # configuration
-API_URL=https://api.pushbullet.com/api
+API_URL=https://api.pushbullet.com/v2
 CONFIG=${XDG_CONFIG_HOME:-$HOME/.config}/pushbullet-kde
 MAX_FILE_SIZE=$(( 25*1024*1024 )) #25MB
 source $CONFIG
@@ -47,8 +47,10 @@ if [ "$API_KEY" = "" ];then
 	fi
 fi
 
+#curl -s -w "\nhttpstatus_%{http_code}" -X GET $API_URL/devices -u $API_KEY: | tr '{' '\n' | tr ',' '\n' | grep iden | cut -d'"' -f4
 # get user's devices
-output=$(curl -s -w "\nhttpstatus_%{http_code}" $API_URL/devices -u $API_KEY: |  grep -e \"model\" -e \"iden\" -e httpstatus | sed -e 's/\bmodel\b//g' | sed -e 's/\biden\b//g' | sed -e 's/[ ":,]//g' | sed -e 's/\n/ /g' )
+#output=$(curl -s -w "\nhttpstatus_%{http_code}" -X GET $API_URL/devices -u $API_KEY: |  grep -e \"model\" -e \"iden\" -e httpstatus | sed -e 's/\bmodel\b//g' | sed -e 's/\biden\b//g' | sed -e 's/[ ":,]//g' | sed -e 's/\n/ /g' )
+output=$(curl -s -w "\nhttpstatus_%{http_code}" -X GET $API_URL/devices -u $API_KEY: | tr '{' '\n' | tr ',' '\n' | grep -e \"model\" -e \"iden\" -e httpstatus | cut -d'"' -f4)
 devices=($output)
 
 # check call status
@@ -60,7 +62,7 @@ fi
 # build device menu dialog
 devicemenulist=""
 for (( c=1; c<${#devices[*]}; c=c+2 )); do
-	devicemenulist="$devicemenulist ${devices[$c]} \"${devices[(($c-1))]}\""
+	devicemenulist="$devicemenulist ${devices[$c]} \"${devices[(($c))]}\""
 done
 
 device=`kdialog --menu "Choose target device:"  $devicemenulist`
@@ -72,8 +74,10 @@ fi
 # push every file and check http status code
 errors=""
 for file in "${files[@]}"; do
-	status=`curl -sL -w "%{http_code}"  "$API_URL/pushes" -u $API_KEY: -F device_iden=$device -F type=file -F file="@$file" -X POST -o /dev/null`
-	if [ "$status" != "200" ]; then
+	#status=`curl -sL -w "%{http_code}"  "$API_URL/pushes" -u $API_KEY: -F device_iden=$device -F type=file -F file="@$file" -X POST -o /dev/null`
+	status="$(pushbullet push $device file $file)"
+	#kdialog --sorry "Fichero: $status"
+	if [ "$status" != "created" ]; then
 		errors="$errors\n$file"
 	fi
 done
